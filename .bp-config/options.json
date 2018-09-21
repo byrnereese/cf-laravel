@@ -16,5 +16,9 @@
   "PHP_MODULES": [
     "fpm",
     "cli"
+  ],
+  "ADDITIONAL_PREPROCESS_CMDS": [
+    "php artisan migrate --force",
+    "php artisan config:cache"
   ]
 }

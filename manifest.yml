@@ -1,9 +1,35 @@
 ---
-applications:
-- name: [app_name]
+defaults: &defaults
   memory: 128M
+  instances: 1
   buildpack: https://github.com/cloudfoundry/php-buildpack
+  services:
+#  - my-db
+  - my-redis
   env:
-    APP_DEBUG: false
+    APP_DEBUG: true
     CF_STAGING_TIMEOUT: 15
     CF_STARTUP_TIMEOUT: 15
+    APP_KEY: aSRIZ$GC*Jk9m)(SuxjnSBuRAgX&r&cf
+    CACHE_DRIVER: redis
+    DB_CERT_PATH: /etc/ssl/certs
+    DB_CONNECTION: mysql
+    QUEUE_DRIVER: redis
+    REDIS_SCHEME: tls
+    SESSION_DRIVER: redis
+
+applications:
+- name: laravel_test
+  <<: *defaults
+
+- name: my-app-queue-worker
+  <<: *defaults
+  no-route: true
+  command: php artisan queue:work
+  health-check-type: process
+
+- name: my-app-scheduler
+  <<: *defaults
+  no-route: true
+  command: php artisan cf:run-scheduler
+  health-check-type: process
